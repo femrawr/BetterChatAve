@@ -1,29 +1,30 @@
 export default {
-	hooked: {},
+    _hooked: {},
 
-	hookNotifis(t) {
-		if (t) {
-			this.hooked.callSuccess = callSuccess;
-			callSuccess = () => {};
-			return;
-		}
+    notifs(hook) {
+        if (hook) {
+            this._hooked.callSuccess = window.callSuccess;
+            window.callSuccess = () => {}
 
-		if (!this.hooked.callSuccess)
-			return;
+            return;
+        }
 
-		callSuccess = this.hooked.callSuccess;
-		delete this.hooked.callSuccess;
-	},
+        if (!this._hooked.callSuccess)
+            return;
 
-	hookCloseRight() {
-		let oldCloseRight = closeRight;
+        window.callSuccess = this._hooked.callSuccess;
+        delete this._hooked.callSuccess;
+    },
 
-		closeRight = () => {
-			prepareRight(0);
-			userReload(1);
+    closeRight() {
+        let old = window.closeRight;
 
-			closeRight = oldCloseRight;
-			oldCloseRight = null;
-		};
-	}
+        window.closeRight = () => {
+            window.prepareRight(0);
+            window.userReload(1);
+
+            window.closeRight = old;
+            old = null;
+        };
+    }
 };

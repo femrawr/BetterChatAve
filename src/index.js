@@ -1,29 +1,31 @@
-import gui from './gui/gui'
-import manager from './module/manager';
+import manager from './core/manager.js';
+import notifs from './gui/notifs.js';
+import panel from './gui/panel.js';
 
 class Main {
-	constructor() {
-		window.bca = {};
-	}
+    constructor() {
+        window.bca = {};
+        window.bca.artifacts = [];
+        window.bca.events = [];
 
-	init() {
-		gui.init();
-		manager.init();
+        this.init();
+    }
 
-		window.bca.modules = manager.modules;
-		window.bca.gui = gui;
-	}
+    init() {
+        panel.init('Better Chate Avenue - femrawr')
+        notifs.init();
+
+        manager.init();
+
+        panel.onClose = () => {
+            window.bca.artifacts.forEach(el => {
+                el.remove();
+            });
+        }
+
+        notifs.good('Better Chat Avenue loaded!', 5);
+        notifs.info('Click the "Insert" key to toggle the UI', 7);
+    }
 };
 
-const main = new Main();
-
-const onLoaded = () => {
-	main.init();
-	document.removeEventListener('DOMContentLoaded', onLoaded);
-}
-
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', onLoaded);
-} else {
-	onLoaded();
-}
+export default new Main();
