@@ -1,3 +1,4 @@
+import hooks from '../../../utils/hooks.js';
 import Module from '../../base.js';
 
 export default class FilterBypass extends Module {
@@ -13,17 +14,10 @@ export default class FilterBypass extends Module {
     onInit() {
         const self = this;
 
-        const oldOpen = XMLHttpRequest.prototype.open;
-        const oldSend = XMLHttpRequest.prototype.send;
-
-        XMLHttpRequest.prototype.open = function(...args) {
-            this._hook = /(?:chat|private)_process\.php/.test(args[1]);
-            return oldOpen.apply(this, args);
-        };
-
-        XMLHttpRequest.prototype.send = function(body) {
+        hooks.xhrFuncs.push(function(args) {
+            const body = args[0];
             if (!this._hook || typeof body !== 'string' || !self.state) {
-                return oldSend.call(this, body);
+                return;
             }
 
             const params = new URLSearchParams(body);
@@ -32,10 +26,8 @@ export default class FilterBypass extends Module {
                 const bypass = content.split('').join('\u200D');
 
                 params.set('content', bypass)
-                body = params.toString();
+                args[0] = params.toString();
             }
-
-            return oldSend.call(this, body);
-        };
+        });
     }
 };

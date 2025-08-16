@@ -1,4 +1,5 @@
 import panel from '../gui/panel.js';
+import hooks from '../utils/hooks.js';
 
 import ClearDMs from './modules/convenience/ClearDMs.js';
 import FastBlock from './modules/convenience/FastBlock.js';
@@ -9,6 +10,8 @@ import DisableSuccess from './modules/misc/DisableSuccess.js';
 import FilterBypass from './modules/misc/FilterBypass.js';
 
 import NotifSettings from './modules/settings/Notifications.js';
+
+import ChatSaving from './patches/ChatSaving.js';
 
 export default {
     sections: {},
@@ -29,6 +32,8 @@ export default {
         this.add(new CountrySearch());
 
         this.add(new NotifSettings());
+
+        ChatSaving();
     },
 
     ui(module) {
@@ -129,6 +134,7 @@ export default {
     },
 
     init() {
+        hooks.request();
         this.load();
 
         panel.addLabel(null, 'Hold down shift to activate binds.');

@@ -11,8 +11,7 @@ export default {
     entry: './src/index.js',
     output: {
         filename: 'main.min.js',
-        path: path.resolve(__dirname, 'build'),
-        clean: true
+        path: path.resolve(__dirname, 'build')
     },
     module: {
         rules: [{
