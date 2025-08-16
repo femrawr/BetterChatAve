@@ -30,7 +30,6 @@ export default {
     },
 
     request() {
-        window.nighg = this;
         const self = this;
 
         const oldOpen = XMLHttpRequest.prototype.open;
