@@ -29,26 +29,38 @@ export default {
         };
     },
 
-    request() {
-        const self = this;
+    request(hook) {
+        if (hook) {
+            const self = this;
 
-        const oldOpen = XMLHttpRequest.prototype.open;
-        const oldSend = XMLHttpRequest.prototype.send;
+            this._hooked.xhrOpen = XMLHttpRequest.prototype.open;
+            this._hooked.xhrSend = XMLHttpRequest.prototype.send;
 
-        XMLHttpRequest.prototype.open = function(...args) {
-            this._main = args[1].includes('chat_process.php');
-            this._hook = /(?:chat|private)_process\.php/.test(args[1]);
-            return oldOpen.apply(this, args);
-        };
+            XMLHttpRequest.prototype.open = function(...args) {
+                this._main = args[1].includes('chat_process.php');
+                this._hook = /(?:chat|private)_process\.php/.test(args[1]);
+                return self._hooked.xhrOpen.apply(this, args);
+            };
 
-        XMLHttpRequest.prototype.send = function(...args) {
-            if (!this._hook) return oldSend.apply(this, args);
+            XMLHttpRequest.prototype.send = function(...args) {
+                if (!this._hook) return self._hooked.xhrSend.apply(this, args);
 
-            for (const func of self.xhrFuncs) {
-                func.call(this, args);
-            }
+                for (const func of self.xhrFuncs) {
+                    func.call(this, args);
+                }
 
-            return oldSend.apply(this, args);
+                return self._hooked.xhrSend.apply(this, args);
+            };
+
+            return;
         }
+
+        XMLHttpRequest.prototype.open = this._hooked.xhrOpen;
+        delete this._hooked.xhrOpen;
+
+        XMLHttpRequest.prototype.send = this._hooked.xhrSend;
+        delete this._hooked.xhrSend;
+
+        this.xhrFuncs = [];
     }
 };

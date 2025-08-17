@@ -21,7 +21,9 @@ class Main {
             window.bca.artifacts.forEach(el => {
                 el.remove();
             });
-        }
+
+            manager.deinit();
+        };
 
         notifs.good('Better Chat Avenue loaded!', 5);
         notifs.info('Click the "Insert" key to toggle the UI', 7);

@@ -12,11 +12,12 @@ import FilterBypass from './modules/misc/FilterBypass.js';
 
 import NotifSettings from './modules/settings/Notifications.js';
 
-import ChatSaving from './patches/ChatSaving.js';
+import chatSaving from './patches/ChatSaving.js';
 
 export default {
     sections: {},
     modules: {},
+    listener: [],
 
     add(module) {
         this.modules[module.name] = module;
@@ -34,7 +35,7 @@ export default {
 
         this.add(new NotifSettings());
 
-        ChatSaving();
+        chatSaving.init();
     },
 
     load() {
@@ -161,7 +162,7 @@ export default {
     },
 
     bind(module) {
-        document.addEventListener('keydown', (e) => {
+        const keydown = (e) => {
             if (e.key.toLowerCase() !== module.bind.toLowerCase() || !e.shiftKey) return;
 
             window.$('#message_content')[0]?.blur();
@@ -174,11 +175,14 @@ export default {
             } else if (module.type === 'Button') {
                 module.onActive();
             }
-        });
+        };
+
+        document.addEventListener('keydown', keydown);
+        this.listener.push({ event: 'keydown', func: keydown });
     },
 
     init() {
-        hooks.request();
+        hooks.request(true);
         this.register();
         this.load();
 
@@ -187,10 +191,26 @@ export default {
         Object.values(this.modules).forEach(mod => {
             if (!mod.state) return;
             mod.onEnable();
-            
+
             if (mod.type === 'Toggle') {
                 mod.ui.set(true);
             }
         });
+    },
+
+    deinit() {
+        chatSaving.deinit();
+
+        Object.values(this.modules).forEach(mod => {
+            mod.disable();
+        });
+
+        document.removeEventListener(
+            this.listener[0].event,
+            this.listener[0].func
+        );
+
+        this.listener = [];
+        hooks.request(false);
     }
 };
