@@ -6,6 +6,7 @@ export default class NotifSettings extends Module {
         super({
             name: 'Disable Notifications',
             sect: 'Settings',
+            state: true,
             type: 'Toggle',
             tip: 'Disable Notifications from the UI.'
         });

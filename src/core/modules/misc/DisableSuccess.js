@@ -6,6 +6,7 @@ export default class DisableSuccess extends Module {
         super({
             name: 'Disable Success',
             sect: 'Miscellaneous',
+            state: true,
             type: 'Toggle',
             tip: 'Disables the success banner that appears at the top of your screen.'
         });

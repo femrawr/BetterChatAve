@@ -3,6 +3,7 @@ export default class Module {
         const {
             name = 'Name',
             sect = null,
+            state = false,
             type = '',
             bind = '',
             tip = '',
@@ -11,12 +12,11 @@ export default class Module {
 
         this.name = name;
         this.sect = sect;
+        this.state = state;
         this.type = type;
         this.bind = bind;
         this.tip = tip;
         this.config = config;
-
-        this.state = false;
         this.ui = null;
     }
 

@@ -142,6 +142,10 @@ export default {
         Object.values(this.modules).forEach(mod => {
             if (!mod.state) return;
             mod.onEnable();
+            
+            if (mod.type === 'Toggle') {
+                mod.ui.set(true);
+            }
         });
     }
 };

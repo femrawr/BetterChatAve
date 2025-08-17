@@ -6,6 +6,7 @@ export default class FilterBypass extends Module {
         super({
             name: 'Filter Bypass',
             sect: 'Miscellaneous',
+            state: true,
             type: 'Toggle',
             tip: 'Bypasses the chat filter.'
         });
