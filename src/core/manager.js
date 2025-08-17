@@ -1,5 +1,6 @@
 import panel from '../gui/panel.js';
 import hooks from '../utils/hooks.js';
+import saving from './saving.js';
 
 import ClearDMs from './modules/convenience/ClearDMs.js';
 import FastBlock from './modules/convenience/FastBlock.js';
@@ -22,7 +23,7 @@ export default {
         this.ui(module);
     },
 
-    load() {
+    register() {
         this.add(new ClearDMs());
         this.add(new SwapDms());
         this.add(new FastBlock());
@@ -34,6 +35,46 @@ export default {
         this.add(new NotifSettings());
 
         ChatSaving();
+    },
+
+    load() {
+        const loaded = saving.get();
+        if (!loaded || !loaded.modules) return;
+
+        Object.entries(loaded.modules).forEach(([name, data]) => {
+            const module = this.modules[name];
+            if (!module) return;
+
+            if (data.state !== undefined) {
+                module.state = data.state;
+            }
+
+            if (data.config && module.config) {
+                Object.assign(module.config, data.config);
+            }
+
+            if (data.value !== undefined && module.value !== undefined) {
+                module.value = data.value;
+            }
+        });
+    },
+
+    save(module) {
+        const data = { state: module.state };
+
+        if (module.config && Object.keys(module.config).length > 0) {
+            data.config = { ...module.config };
+        }
+
+        if (module.value !== undefined) {
+            data.value = module.value;
+        }
+
+        const saved = saving.get() || {};
+        const states = saved.modules || {};
+
+        states[module.name] = data;
+        saving.update('modules', states);
     },
 
     ui(module) {
@@ -52,6 +93,7 @@ export default {
 
                     (state) => {
                         module.toggle(state);
+                        this.save(module);
                     }
                 );
 
@@ -82,6 +124,7 @@ export default {
 
                     (val) => {
                         module.onChange(val);
+                        this.save(module);
                     }
                 );
 
@@ -95,6 +138,7 @@ export default {
 
                     (val) => {
                         module.onChange(val);
+                        this.save(module);
                     }
                 );
 
@@ -135,6 +179,7 @@ export default {
 
     init() {
         hooks.request();
+        this.register();
         this.load();
 
         panel.addLabel(null, 'Hold down shift to activate binds.');

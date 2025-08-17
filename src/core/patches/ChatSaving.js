@@ -1,15 +1,21 @@
 import hooks from '../../utils/hooks.js';
+import saving from '../saving.js';
 
-const saved = [];
+let saved = [];
 let index = -1;
 let focused = false;
 
 const input = window.$('#content');
 
 export default () => {
+    const loaded = saving.get();
+    if (loaded && loaded.chat_save) {
+        saved = loaded.chat_save;
+    }
+
     hooks.xhrFuncs.push(function(args) {
         const body = args[0];
-        if (!this._hook || typeof body !== 'string') {
+        if (!this._main || typeof body !== 'string') {
             return;
         }
 
@@ -24,6 +30,7 @@ export default () => {
         }
 
         saved.push(content);
+        saving.update('chat_save', saved);
     });
 
     input.on('focus', () => {

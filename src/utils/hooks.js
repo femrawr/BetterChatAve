@@ -36,6 +36,7 @@ export default {
         const oldSend = XMLHttpRequest.prototype.send;
 
         XMLHttpRequest.prototype.open = function(...args) {
+            this._main = args[1].includes('chat_process.php');
             this._hook = /(?:chat|private)_process\.php/.test(args[1]);
             return oldOpen.apply(this, args);
         };
