@@ -24,7 +24,13 @@ export default class FilterBypass extends Module {
             const params = new URLSearchParams(body);
             if (params.has('content')) {
                 const content = params.get('content');
-                const bypass = content.split('').join('\u200D');
+                const bypass = content.split(' ').map(word => {
+                    if (word.length <= 2) {
+                        return word;
+                    } else {
+                        return word.split('').join('\u200D');
+                    }
+                }).join(' ');
 
                 params.set('content', bypass)
                 args[0] = params.toString();
