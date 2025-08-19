@@ -8,6 +8,10 @@ let focused = false;
 const input = window.$('#content');
 let listener = [];
 
+const clean = (str) => {
+    return str.normalize('NFC').replace(/[\u200B-\u200D\uFEFF]/g, '');
+}
+
 export default {
     init() {
         const loaded = saving.get();
@@ -26,12 +30,12 @@ export default {
 
             const content = params.get('content');
             for (let i = saved.length - 1; i >= 0; i--) {
-                if (saved[i] === content) {
+                if (clean(saved[i]) === clean(content)) {
                     saved.splice(i, 1);
                 }
             }
 
-            saved.push(content);
+            saved.push(clean(content));
             saving.update('chat_save', saved);
         });
 
