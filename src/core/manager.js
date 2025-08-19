@@ -6,6 +6,9 @@ import ClearDMs from './modules/convenience/ClearDMs.js';
 import FastBlock from './modules/convenience/FastBlock.js';
 import SwapDms from './modules/convenience/SwapDms.js';
 
+import BlurBackground from './modules/interface/BlurBackground.js';
+import BackgroundOpacity from './modules/interface/BackgroundOpacity.js';
+
 import CountrySearch from './modules/misc/CountrySearch.js';
 import DisableSuccess from './modules/misc/DisableSuccess.js';
 import FilterBypass from './modules/misc/FilterBypass.js';
@@ -28,6 +31,9 @@ export default {
         this.add(new ClearDMs());
         this.add(new SwapDms());
         this.add(new FastBlock());
+
+        this.add(new BlurBackground());
+        this.add(new BackgroundOpacity());
 
         this.add(new FilterBypass());
         this.add(new DisableSuccess());
@@ -53,10 +59,6 @@ export default {
             if (data.config && module.config) {
                 Object.assign(module.config, data.config);
             }
-
-            if (data.value !== undefined && module.value !== undefined) {
-                module.value = data.value;
-            }
         });
     },
 
@@ -65,10 +67,6 @@ export default {
 
         if (module.config && Object.keys(module.config).length > 0) {
             data.config = { ...module.config };
-        }
-
-        if (module.value !== undefined) {
-            data.value = module.value;
         }
 
         const saved = saving.get() || {};
@@ -124,6 +122,7 @@ export default {
                     value,
 
                     (val) => {
+                        module.config.value = val;
                         module.onChange(val);
                         this.save(module);
                     }
@@ -192,8 +191,14 @@ export default {
             if (!mod.state) return;
             mod.onEnable();
 
-            if (mod.type === 'Toggle') {
-                mod.ui.set(true);
+            switch (mod.type) {
+                case 'Toggle':
+                    mod.ui.set(true);
+                    break;
+
+                case 'Slider':
+                    mod.ui.set(mod.config.value);
+                    break;
             }
         });
     },
