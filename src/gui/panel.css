@@ -1,0 +1,254 @@
+.gui-main-ctnr {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 460px;
+    background: #0d0d0d;
+    border: 1px solid #333;
+    border-radius: 6px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    z-index: 999999;
+    user-select: none;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.9);
+}
+
+.gui-main-ctnr::-webkit-scrollbar {
+    display: none;
+}
+
+.gui-main-header {
+    background: #111;
+    color: #eee;
+    padding: 14px 18px;
+    cursor: default;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    font-weight: bold;
+    border-bottom: 1px solid #333;
+}
+
+.gui-main-close {
+    color: #ff4444;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: lighter;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.gui-main-close:hover {
+    color: #ff6666;
+}
+
+.gui-main-cont {
+    padding: 18px;
+    max-height: calc(80vh - 52px);
+    overflow-y: auto;
+}
+
+.gui-main-cont::-webkit-scrollbar {
+    display: none;
+}
+
+.gui-main-sect {
+    margin-bottom: 18px;
+    border: 1px solid #2a2a2a;
+    border-radius: 5px;
+    background: #161616;
+}
+
+.gui-sect-head {
+    background: #1a1a1a;
+    padding: 10px 14px;
+    border-bottom: 1px solid #2a2a2a;
+    color: #ccc;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gui-sect-toggle {
+    color: #888;
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+.gui-main-sect.collapsed .gui-sect-toggle {
+    transform: rotate(-90deg);
+}
+
+.gui-sect-cont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.gui-main-sect.collapsed .gui-sect-cont {
+    display: none;
+}
+
+.gui-item-main {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.gui-item-label {
+    color: #ccc;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.gui-item-toggle {
+    position: relative;
+    width: 52px;
+    height: 26px;
+    background: #333;
+    border-radius: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.gui-item-toggle.active {
+    background: #ff4444;
+}
+
+.gui-item-toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.gui-item-toggle.active::after {
+    transform: translateX(26px);
+}
+
+.gui-item-button {
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    background: #ff4444;
+    color: white;
+    font-weight: 600;
+}
+
+.gui-item-button:hover {
+    background: #ff6666;
+    transform: translateY(-1px);
+}
+
+.gui-item-button:active {
+    transform: translateY(0);
+}
+
+.gui-item-box, .gui-item-button {
+    width: 100%;
+    padding: 10px;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #ccc;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.gui-item-box:focus {
+    border-color: #ff4444;
+}
+
+.gui-item-slider-ctnr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.gui-item-slider-box {
+    width: 60px;
+    padding: 4px 6px;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 3px;
+    color: #ff4444;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+}
+
+.gui-item-slider-box:focus {
+    border-color: #ff4444;
+}
+
+.gui-item-slider {
+    flex: 1;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    outline: none;
+    appearance: none;
+}
+
+.gui-item-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #ff4444;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.gui-item-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #ff4444;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+.gui-tip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 1000000;
+    max-width: 240px;
+    white-space: normal;
+}
+
+.gui-tip.show {
+    opacity: 1;
+    transform: translateY(-8px);
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
