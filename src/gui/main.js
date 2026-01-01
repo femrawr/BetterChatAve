@@ -114,7 +114,7 @@ export default {
             display: 'flex',
             flexDirection: 'column',
             gap: '10px',
-            zIndex: '1000000',
+            zIndex: '10000',
             pointerEvents: 'none'
         });
 
@@ -184,6 +184,72 @@ export default {
 
         document.body.appendChild(this.main);
         document.body.appendChild(this.notifs);
+    },
+
+    sendNotif(text, time = 0) {
+        const notif = document.createElement('div');
+        Object.assign(notif.style, {
+            background: '#1a1a1a',
+            border: '1px solid #2a2a2a',
+            padding: '12px 16px',
+            minWidth: '250px',
+            maxWidth: '350px',
+            color: '#ddd',
+            fontSize: '13px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+            cursor: 'pointer',
+            pointerEvents: 'auto',
+            transform: 'translateX(400px)',
+            transition: 'transform 0.3s ease',
+            borderLeft: `3px solid #1967d2`
+        });
+
+        const msg = document.createElement('div');
+        msg.textContent = text;
+        msg.style.lineHeight = '1.4';
+
+        notif.appendChild(msg);
+        this.notifs.appendChild(notif);
+
+        setTimeout(() => {
+            notif.style.transform = 'translateX(0)';
+        }, 5);
+
+        notif.addEventListener('click', () => {
+            notif.style.transform = 'translateX(400px)';
+
+            event.emit('notif.clicked', {
+                text: text,
+            });
+
+            setTimeout(() => {
+                if (!notif.parentNode) {
+                    return;
+                }
+
+                notif.parentNode.removeChild(notif);
+            }, 300);
+        });
+
+        if (time === 0) {
+            return;
+        }
+
+        setTimeout(() => {
+            if (!notif.parentNode) {
+                return;
+            }
+
+            notif.style.transform = 'translateX(400px)';
+
+            setTimeout(() => {
+                if (!notif.parentNode) {
+                    return;
+                }
+
+                notif.parentNode.removeChild(notif);
+            }, 300);
+        }, time * 1000);
     },
 
     _renderTab() {

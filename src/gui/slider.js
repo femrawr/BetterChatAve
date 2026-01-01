@@ -1,4 +1,5 @@
 import Element from './base.js';
+import event from '../utils/event.js';
 
 export default class Slider extends Element {
     constructor() {
@@ -92,6 +93,11 @@ export default class Slider extends Element {
 
             slider.value = clamped
             valueInput.value = parsed;
+
+            event.emit('slider', {
+                name: this.text,
+                val: parsed
+            });
         });
 
         value.addEventListener('keypress', (e) => {
@@ -103,6 +109,11 @@ export default class Slider extends Element {
 
         slider.addEventListener('input', (e) => {
             value.value = e.target.value;
+
+            event.emit('slider', {
+                name: this.text,
+                val: e.target.value
+            });
         });
 
         head.appendChild(label);

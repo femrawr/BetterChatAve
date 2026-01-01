@@ -1,4 +1,5 @@
 import Element from './base.js';
+import event from '../utils/event.js';
 
 export default class Textbox extends Element {
     constructor() {
@@ -56,6 +57,13 @@ export default class Textbox extends Element {
             fontSize: '13px',
             outline: 'none',
             boxSizing: 'border-box'
+        });
+
+        input.addEventListener('change', (e) => {
+            event.emit('textbox', {
+                name: this.text,
+                val: e.target.value
+            });
         });
 
         wrapper.appendChild(label);

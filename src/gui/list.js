@@ -1,4 +1,5 @@
 import Element from './base.js';
+import event from '../utils/event.js';
 
 export default class List extends Element {
     constructor() {
@@ -54,6 +55,13 @@ export default class List extends Element {
             });
 
             selector.appendChild(option);
+        });
+
+        selector.addEventListener('change', (e) => {
+            event.emit('dropdown', {
+                name: this.text,
+                item: e.target.value
+            });
         });
 
         wrapper.appendChild(label);
