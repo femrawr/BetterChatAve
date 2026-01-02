@@ -6,6 +6,7 @@ export default class Slider extends Element {
         super();
 
         this.text = 'text';
+        this.info = '';
         this.min = 0;
         this.max = 0;
         this.val = 0;
@@ -31,13 +32,24 @@ export default class Slider extends Element {
         return this;
     }
 
+    setInfo(info) {
+        this.info = info;
+        return this;
+    }
+
     build() {
+        const container = document.createElement('div');
+        Object.assign(container.style, {
+            marginBottom: '10px'
+        });
+
         const wrapper = document.createElement('div');
         Object.assign(wrapper.style, {
             padding: '12px',
             background: '#0f0f0f',
             border: '1px solid #2a2a2a',
-            marginBottom: '10px'
+            cursor: 'pointer',
+            userSelect: 'none'
         });
 
         const head = document.createElement('div');
@@ -87,6 +99,19 @@ export default class Slider extends Element {
             outline: 'none'
         });
 
+        const info = document.createElement('div');
+        info.textContent = this.info;
+        Object.assign(info.style, {
+            padding: '12px',
+            background: '#0a0a0a',
+            border: '1px solid #2a2a2a',
+            borderTop: 'none',
+            color: '#999',
+            fontSize: '12px',
+            lineHeight: '1.5',
+            display: 'none'
+        });
+
         value.addEventListener('input', (e) => {
             const parsed = parseFloat(e.target.value) || 0;
             const clamped = Math.max(this._min, Math.min(this._max, parsed));
@@ -116,12 +141,25 @@ export default class Slider extends Element {
             });
         });
 
+        let opened = false;
+
+        wrapper.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+
+            opened = !opened;
+
+            info.style.display = opened ? 'block' : 'none';
+            wrapper.style.background = opened ? '#151515' : '#0f0f0f';
+        });
+
         head.appendChild(label);
         head.appendChild(value);
         wrapper.appendChild(head);
         wrapper.appendChild(slider);
+        container.appendChild(wrapper);
+        container.appendChild(info);
 
-        this._buildInto(wrapper);
+        this._buildInto(container);
         return this;
     }
 };

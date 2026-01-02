@@ -6,11 +6,17 @@ export default class List extends Element {
         super();
 
         this.text = 'text';
+        this.info = '';
         this.items = [];
     }
 
     setText(text) {
         this.text = text;   
+        return this;
+    }
+
+    setInfo(info) {
+        this.info = info;
         return this;
     }
 
@@ -20,15 +26,22 @@ export default class List extends Element {
     }
 
     build() {
+        const container = document.createElement('div');
+        Object.assign(container.style, {
+            marginBottom: '10px'
+        });
+
         const wrapper = document.createElement('div');
         Object.assign(wrapper.style, {
             padding: '12px',
             background: '#0f0f0f',
-            marginBottom: '10px',
-            border: '1px solid #2a2a2a'
+            border: '1px solid #2a2a2a',
+            cursor: 'pointer',
+            userSelect: 'none'
         });
 
         const label = document.createElement('div');
+        label.textContent = this.text;
         Object.assign(label.style, {
             color: '#ddd',
             fontSize: '13px',
@@ -47,8 +60,21 @@ export default class List extends Element {
             outline: 'none'
         });
 
+        const info = document.createElement('div');
+        info.textContent = this.info;
+        Object.assign(info.style, {
+            padding: '12px',
+            background: '#0a0a0a',
+            border: '1px solid #2a2a2a',
+            borderTop: 'none',
+            color: '#999',
+            fontSize: '12px',
+            lineHeight: '1.5',
+            display: 'none'
+        });
+
         this.items.forEach((item) => {
-            const option = document.createElement('span');
+            const option = document.createElement('option');
             Object.assign(option, {
                 value: item,
                 textContent: item
@@ -64,10 +90,23 @@ export default class List extends Element {
             });
         });
 
+        let opened = false;
+
+        wrapper.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+
+            opened = !opened;
+
+            info.style.display = opened ? 'block' : 'none';
+            wrapper.style.background = opened ? '#151515' : '#0f0f0f';
+        });
+
         wrapper.appendChild(label);
         wrapper.appendChild(selector);
+        container.appendChild(wrapper);
+        container.appendChild(info);
 
-        this._buildInto(wrapper);
+        this._buildInto(container);
         return this;
     }
 };

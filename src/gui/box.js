@@ -8,6 +8,7 @@ export default class Textbox extends Element {
         this.text = 'text';
         this.placeholder = '';
         this.val = '';
+        this.info = '';
     }
 
     setText(text) {
@@ -25,16 +26,27 @@ export default class Textbox extends Element {
         return this;
     }
 
+    setInfo(info) {
+        this.info = info;
+        return this;
+    }
+
     build() {
+        const container = document.createElement('div');
+        Object.assign(container.style, {
+            marginBottom: '10px'
+        });
+
         const wrapper = document.createElement('div');
         Object.assign(wrapper.style, {
             padding: '12px',
             background: '#0f0f0f',
-            marginBottom: '10px',
-            border: '1px solid #2a2a2a'
+            border: '1px solid #2a2a2a',
+            cursor: 'pointer',
+            userSelect: 'none'
         });
 
-        const label = document.createElement('span');
+        const label = document.createElement('div');
         label.textContent = this.text;
         Object.assign(label.style, {
             color: '#ddd',
@@ -45,7 +57,9 @@ export default class Textbox extends Element {
         const input = document.createElement('input');
         Object.assign(input, {
             type: 'text',
-            placeholder: this.placeholder
+            value: this.val,
+            placeholder: this.placeholder,
+            spellcheck: false
         });
 
         Object.assign(input.style, {
@@ -59,6 +73,19 @@ export default class Textbox extends Element {
             boxSizing: 'border-box'
         });
 
+        const info = document.createElement('div');
+        info.textContent = this.info;
+        Object.assign(info.style, {
+            padding: '12px',
+            background: '#0a0a0a',
+            border: '1px solid #2a2a2a',
+            borderTop: 'none',
+            color: '#999',
+            fontSize: '12px',
+            lineHeight: '1.5',
+            display: 'none'
+        });
+
         input.addEventListener('change', (e) => {
             event.emit('textbox', {
                 name: this.text,
@@ -66,10 +93,23 @@ export default class Textbox extends Element {
             });
         });
 
+        let opened = false;
+
+        wrapper.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+
+            opened = !opened;
+
+            info.style.display = opened ? 'block' : 'none';
+            wrapper.style.background = opened ? '#151515' : '#0f0f0f';
+        });
+
         wrapper.appendChild(label);
         wrapper.appendChild(input);
+        container.appendChild(wrapper);
+        container.appendChild(info);
 
-        this._buildInto(wrapper);
+        this._buildInto(container);
         return this;
     }
 };

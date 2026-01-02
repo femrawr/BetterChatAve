@@ -7,6 +7,7 @@ export default class Button extends Element {
 
         this.text = 'text';
         this.binded = false;
+        this.info = '';
 
         this._listening = false;
         this._key = 'none';
@@ -19,6 +20,11 @@ export default class Button extends Element {
 
     setBinded() {
         this.binded = true;
+        return this;
+    }
+
+    setInfo(info) {
+        this.info = info;
         return this;
     }
 
@@ -40,7 +46,43 @@ export default class Button extends Element {
             cursor: 'pointer',
             fontSize: '13px',
             fontWeight: '500',
-            transition: 'background 0.2s'
+            transition: 'background 0.15s'
+        });
+
+        const info = document.createElement('div');
+        info.textContent = this.info;
+        Object.assign(info.style, {
+            padding: '12px',
+            background: '#0a0a0a',
+            border: '1px solid #2a2a2a',
+            borderTop: 'none',
+            color: '#999',
+            fontSize: '12px',
+            lineHeight: '1.5',
+            display: 'none'
+        });
+
+        let opened = false;
+
+        button.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+
+            opened = !opened;
+
+            info.style.display = opened ? 'block' : 'none';
+            button.style.background = opened ? '#1558b0' : '#1967d2';
+        });
+
+        button.addEventListener('mousedown', () => {
+            button.style.background = '#175fc4';
+        });
+
+        button.addEventListener('mouseup', () => {
+            button.style.background = opened ? '#1558b0' : '#1967d2';
+        });
+
+        button.addEventListener('mouseleave', () => {
+            button.style.background = opened ? '#1558b0' : '#1967d2';
         });
 
         button.addEventListener('click', () => {
@@ -57,18 +99,16 @@ export default class Button extends Element {
                 right: '-4px',
                 padding: '4px 8px',
                 background: '#0a0a0a',
-                border: 'none',
                 fontSize: '12px',
                 cursor: 'pointer',
                 userSelect: 'none',
-                transition: 'all 0.2s',
                 minWidth: '60px',
                 textAlign: 'center',
                 zIndex: '1',
                 fontWeight: '600'
             });
 
-            this._updateStyle();
+            this._updateStyle(bind);
 
             bind.addEventListener('click', () => {
                 if (this._listening) {
@@ -76,7 +116,7 @@ export default class Button extends Element {
                 }
 
                 this._listening = true;
-                this._updateStyle();
+                this._updateStyle(bind);
             });
 
             document.addEventListener('keydown', (e) => {
@@ -86,14 +126,13 @@ export default class Button extends Element {
                     if (e.key.toUpperCase() === this._key.toUpperCase()) {
                         this._key = 'none';
                         this._listening = false;
-                        this._updateStyle();
-
+                        this._updateStyle(bind);
                         return;
                     }
 
                     this._key = e.key.length === 1 ? e.key.toUpperCase() : e.key;
                     this._listening = false;
-                    this._updateStyle();
+                    this._updateStyle(bind);
                 }
 
                 if (this._key !== 'none') {
@@ -111,6 +150,7 @@ export default class Button extends Element {
         }
 
         container.appendChild(button);
+        container.appendChild(info);
 
         this._buildInto(container);
         return this;

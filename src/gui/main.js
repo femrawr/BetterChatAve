@@ -1,5 +1,13 @@
 import event from '../utils/event.js';
 
+export const ModuleType = {
+    Textbox: 'box',
+    Button: 'button',
+    Dropdown: 'list',
+    Slider: 'slider',
+    Toggle: 'toggle'
+}
+
 export const Sides = {
     Left: 'left',
     Right: 'right'
@@ -15,8 +23,11 @@ export default {
     left: null,
     right: null,
     notifs: null,
+
     content: {},
     tab: Tabs.Modules,
+
+    notifsAllowed: true,
 
     createMain(theTitle) {
         this.main = document.createElement('div');
@@ -187,6 +198,10 @@ export default {
     },
 
     sendNotif(text, time = 0) {
+        if (!this.notifsAllowed) {
+            return;
+        }
+
         const notif = document.createElement('div');
         Object.assign(notif.style, {
             background: '#1a1a1a',

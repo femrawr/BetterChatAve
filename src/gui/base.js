@@ -1,11 +1,9 @@
-import main from './main.js';
-
-import { Sides, Tabs } from './main.js';
+import gui, { Sides, Tabs } from './main.js';
 
 export default class Element {
     constructor() {
         this.side = Sides.Left;
-        this.tab = Tabs.Modules
+        this.tab = Tabs.Modules;
     }
 
     setSide(side) {
@@ -19,10 +17,24 @@ export default class Element {
     }
 
     _buildInto(item) {
-        main.content[this.tab][this.side].push(item);
-
-        if (main.tab == this.tab) {
-            main._renderTab();
+        if (!gui.content[this.tab]) {
+            gui.content[this.tab] = {};
         }
+
+        Object.values(Sides).forEach((side) => {
+            if (Object.hasOwn(gui.content[this.tab], side)) {
+                return;
+            }
+
+            gui.content[this.tab][side] = [];
+        });
+
+        gui.content[this.tab][this.side].push(item);
+
+        if (gui.tab !== this.tab) {
+            return;
+        }
+
+        gui._renderTab();
     }
 };
