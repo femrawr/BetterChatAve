@@ -117,7 +117,7 @@ export default class Slider extends Element {
             const clamped = Math.max(this._min, Math.min(this._max, parsed));
 
             slider.value = clamped
-            valueInput.value = parsed;
+            value.value = parsed;
 
             event.emit('slider', {
                 name: this.text,
