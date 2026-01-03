@@ -1,6 +1,6 @@
 import gui, { ModuleType, Sides, Tabs } from '../gui/main.js';
 
-import hooks from '../utils/hooks.js';
+import requestHooks from '../utils/request-hooks.js';
 import event from '../utils/event.js';
 import saving from './saving.js';
 
@@ -12,9 +12,9 @@ import Slider from '../gui/slider.js';
 import Toggle from '../gui/toggle.js';
 
 import { FilterBypass, FilterBypassMode } from './modules/filter-bypass.js';
+import { FastBlock, WhitelistFriends} from './modules/fast-block.js';
 import SpamFilter from './modules/spam-filter.js';
 import SwapDms from './modules/swap-messages.js';
-import FastBlock from './modules/fast-block.js';
 import CountrySearch from './modules/country-search.js';
 import ClearDMs from './modules/clear-messages.js';
 import BlurBackground from './modules/blur-background.js';
@@ -45,8 +45,9 @@ export default {
 
         this.add(new SwapDms());
         this.add(new ClearDMs());
-        this.add(new FastBlock());
         this.add(new CountrySearch());
+        this.add(new FastBlock());
+        this.add(new WhitelistFriends());
 
         new Divider()
             .setTab(Tabs.Modules)
@@ -101,6 +102,7 @@ export default {
                     .setInfo(module.info)
                     .build();
 
+                this.modules[module.text].onChange(loaded);
                 break;
 
             case ModuleType.Button:
@@ -121,9 +123,11 @@ export default {
                     .setSide(module.side)
                     .setText(module.text)
                     .setItems(module.config.items)
+                    .setItem(loaded)
                     .setInfo(module.info)
                     .build();
 
+                this.modules[module.text].onChange(loaded);
                 break;
 
             case ModuleType.Slider:
@@ -137,6 +141,7 @@ export default {
                     .setInfo(module.info)
                     .build();
 
+                this.modules[module.text].onChange(loaded);
                 break;
 
             case ModuleType.Toggle:
@@ -148,6 +153,7 @@ export default {
                     .setInfo(module.info)
                     .build();
 
+                this.modules[module.text].toggle(loaded);
                 break;
         }
 
@@ -155,7 +161,7 @@ export default {
     },
 
     init() {
-        hooks.request(true);
+        requestHooks.hookXHR();
 
         this.register();
 
@@ -209,6 +215,6 @@ export default {
         );
 
         this.listener = [];
-        hooks.request(false);
+        requestHooks.unhookXHR();
     }
 };

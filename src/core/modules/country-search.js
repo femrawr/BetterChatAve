@@ -1,6 +1,8 @@
 import Module from '../base.js';
 import { ModuleType, Sides, Tabs } from '../../gui/main.js';
 
+import siteUtils from '../../utils/site-utils.js';
+
 export default class CountrySearch extends Module {
     constructor() {
         super({
@@ -30,7 +32,7 @@ export default class CountrySearch extends Module {
                 }
             });
 
-            hooks.closeRight();
+            siteUtils.hookCloseToReload();
         });
     }
 };

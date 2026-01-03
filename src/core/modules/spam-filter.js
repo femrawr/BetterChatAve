@@ -13,6 +13,7 @@ export default class SpamFilter extends Module {
             info: 'Attemps to detect and remove messages sent by spam bots.'
         });
 
+        this._watcher = null;
         this._list = [];
     }
 
@@ -28,50 +29,50 @@ export default class SpamFilter extends Module {
     }
 
     onEnable() {
-        this.watcher = new MutationObserver((list) => {
-            list.forEach(thing => {
+        this._watcher = new MutationObserver((list) => {
+            list.forEach((thing) => {
                 thing.addedNodes.forEach((node) => {
                     if (!(node instanceof HTMLElement)) {
                         return;
                     }
 
-                    node.querySelectorAll('.chat_message').forEach(el => {
-                        const text = el.innerText.toLowerCase().replace(/[^a-z0-9 ]/g, '');
-                        // console.log(text);
+                    node.querySelectorAll('.chat_message').forEach((element) => {
+                        const text = element.innerText.toLowerCase().replace(/[^a-z0-9 ]/g, '');
 
-                        const match = this._list.find(word => text.includes(word.toLowerCase()));
+                        const match = this._list.find((word) => text.includes(word.toLowerCase()));
                         if (!match) {
                             return;
                         }
 
-                        const msg = el.closest('.public__message');
+                        const msg = element.closest('.public__message');
                         if (!msg) {
                             return;
                         }
 
+                        msg.remove();
+
                         const time = msg.querySelector('.cdate').innerText.trim();
                         const name = msg.querySelector('.username').innerText.trim();
-                        const id = msg.querySelector('.cclear.logs_menu.sub_chat').getAttribute('data-user');
+                        const id = msg.querySelector('.avtrig.avs_menu.chat_avatar').getAttribute('data-id');
 
                         console.log(`[${time}] removed: ${name} (${id}) - ${text} for "${match}"`);
-
-                        msg.remove();
                     });
                 });
             });
         });
 
-        this.watcher.observe($('#chat_logs_container')[0], {
+        this._watcher.observe($('#chat_logs_container')[0], {
             childList: true,
             subtree: true
         });
     }
 
     onDisable() {
-        if (!this.watcher) {
+        if (!this._watcher) {
             return;
         }
 
-        this.watcher.disconnect();
+        this._watcher.disconnect();
+        this._watcher = null;
     }
 };

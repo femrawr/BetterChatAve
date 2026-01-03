@@ -3,9 +3,7 @@ x  decline all freind reqs
 x  accept all freind reqs
 x x fast block (whitelist friends)
 x  unblock last
-x x backgroup opacity
 x x blur background
-x x country search to use custom textbox
 x x disable success
 x x filter bypass (different modes)
 x  mod notify
@@ -19,6 +17,7 @@ x  download picture
 x  view pictures
 
 x manager de-init
-x better code for spam filter
 
 x better documentation
+
+ui toggling

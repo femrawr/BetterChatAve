@@ -3,7 +3,7 @@ import { ModuleType, Sides, Tabs } from '../../gui/main.js';
 
 import inputUtils from '../../utils/input-utils.js';
 
-export default class FastBlock extends Module {
+export class FastBlock extends Module {
     constructor() {
         super({
             text: 'Block this person',
@@ -33,3 +33,15 @@ export default class FastBlock extends Module {
         close.click();
     }
 };
+
+export class WhitelistFriends extends Module {
+    constructor() {
+        super({
+            text: 'Whitelist Friends',
+            tab: Tabs.Modules,
+            side: Sides.Right,
+            type: ModuleType.Toggle,
+            info: 'Prevents the "block this person" (fast block) module from blocking friends.'
+        });
+    }
+}

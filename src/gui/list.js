@@ -7,6 +7,7 @@ export default class List extends Element {
 
         this.text = 'text';
         this.info = '';
+        this.item = '';
         this.items = [];
     }
 
@@ -17,6 +18,11 @@ export default class List extends Element {
 
     setInfo(info) {
         this.info = info;
+        return this;
+    }
+
+    setItem(item) {
+        this.item = item;
         return this;
     }
 
@@ -62,10 +68,10 @@ export default class List extends Element {
             userSelect: 'none'
         });
 
-        let chosen = this.items[0] || '';
+        this.item = this.item || this.items[0] || '';
 
         const selected = document.createElement('span');
-        selected.textContent = chosen;
+        selected.textContent = this.item;
 
         const dropdown = document.createElement('div');
         Object.assign(dropdown.style, {
@@ -104,7 +110,7 @@ export default class List extends Element {
             option.addEventListener('click', (e) => {
                 e.stopPropagation();
 
-                chosen = item;
+                this.item = item;
 
                 selected.textContent = item;
                 dropdown.style.display = 'none';
