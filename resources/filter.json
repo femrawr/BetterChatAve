@@ -1,10 +1,16 @@
-[
-    "ZCBpc2NvcmQ=",
-    "dGVsZWdt",
-    "Y3A=",
-    "dGVsZWdyYW0=",
-    "dGVsZ3JhbQ==",
-    "dGxlZw==",
-    "cyBlIHMgcyBpIG8gbg==",
-    "dGVsZWdybQ=="
-]
+{
+    "spam_list": [
+        "ZCBpc2NvcmQ=",
+        "dGVsZWdt",
+        "Y3A=",
+        "dGVsZWdyYW0=",
+        "dGVsZ3JhbQ==",
+        "dGxlZw==",
+        "cyBlIHMgcyBpIG8gbg==",
+        "dGVsZWdybQ=="
+    ],
+
+    "bannable_list": [
+        "Y3A="
+    ]
+}

@@ -11,4 +11,12 @@ export default class BlurBackground extends Module {
             info: 'Blurs the background when you open someones profile instead of turning the screen black.',
         });
     }
+
+    onEnable() {
+        $('#large_modal').css('backdrop-filter', 'blur(8px)');
+    }
+
+    onDisable() {
+        $('#large_modal').css('backdrop-filter', 'blur(0px)');
+    }
 };

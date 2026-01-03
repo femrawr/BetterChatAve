@@ -14,6 +14,6 @@ export default class BackgroundOpacity extends Module {
     }
 
     onChange(change) {
-        
+        $('#large_modal').css('background-color', `rgb(0, 0, 0, ${change / 100})`);
     }
 };
