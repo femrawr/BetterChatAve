@@ -7,10 +7,11 @@ export default class Button extends Element {
 
         this.text = 'text';
         this.binded = false;
+        this.bind = 'none';
         this.info = '';
 
         this._listening = false;
-        this._key = 'none';
+        this._held = new Set();
     }
 
     setText(text) {
@@ -20,6 +21,11 @@ export default class Button extends Element {
 
     setBinded() {
         this.binded = true;
+        return this;
+    }
+
+    setBind(bind) {
+        this.bind = bind;
         return this;
     }
 
@@ -86,8 +92,9 @@ export default class Button extends Element {
         });
 
         button.addEventListener('click', () => {
-            event.emit('button', {
-                name: this.text
+            event.emit('module.call', {
+                name: this.text,
+                bind: this.bind
             });
         });
 
@@ -110,39 +117,62 @@ export default class Button extends Element {
 
             this._updateStyle(bind);
 
-            bind.addEventListener('click', () => {
+            bind.addEventListener('click', (e) => {
+                e.stopPropagation();
+
                 if (this._listening) {
                     return;
                 }
 
                 this._listening = true;
+                this._held.clear();
                 this._updateStyle(bind);
             });
 
             document.addEventListener('keydown', (e) => {
+                if (!this._listening && this.bind !== 'none') {
+                    const keys = this._getHeldKeys(e);
+                    if (keys !== this.bind) {
+                        return;
+                    }
+
+                    button.click();
+                    return;
+                }
+
                 if (this._listening) {
                     e.preventDefault();
 
-                    if (e.key.toUpperCase() === this._key.toUpperCase()) {
-                        this._key = 'none';
-                        this._listening = false;
-                        this._updateStyle(bind);
-                        return;
-                    }
+                    const key = this._normalizeKey(e.key);
+                    this._held.add(key);
 
-                    this._key = e.key.length === 1 ? e.key.toUpperCase() : e.key;
-                    this._listening = false;
-                    this._updateStyle(bind);
+                    const allKeys = Array.from(this._held);
+                    bind.textContent = `[${allKeys.join(' + ')}]`;
+                    bind.style.color = '#1967d2';
+                }
+            });
+
+            document.addEventListener('keyup', (e) => {
+                if (!this._listening) {
+                    return;
                 }
 
-                if (this._key !== 'none') {
-                    const key = e.key.length === 1 ? e.key.toUpperCase() : e.key;
-                    if (key !== this._key || this._listening) {
-                        return;
-                    }
+                e.preventDefault();
 
-                    e.preventDefault();
-                    button.click();
+                const key = this._normalizeKey(e.key);
+                this._held.delete(key);
+
+                if (this._held.size === 0) {
+                    const keybind = bind.textContent.slice(1, -1);
+
+                    this.bind = keybind || 'none';
+                    this._listening = false;
+                    this._updateStyle(bind);
+
+                    event.emit('module.call', {
+                        name: this.text,
+                        bind: this.bind
+                    });
                 }
             });
 
@@ -161,8 +191,50 @@ export default class Button extends Element {
             item.textContent = '[...]';
             item.style.color = '#1967d2';
         } else {
-            item.textContent = `[${this._key}]`;
+            item.textContent = `[${this.bind}]`;
             item.style.color = '#999';
         }
+    }
+
+    _getHeldKeys(e) {
+        const keys = [];
+
+        if (e.ctrlKey) {
+            keys.push('CTRL');
+        }
+
+        if (e.shiftKey) {
+            keys.push('SHFT');
+        }
+
+        if (e.altKey) {
+            keys.push('ALT');
+        }
+
+        if (e.metaKey) {
+            keys.push('META');
+        }
+
+        const mainKey = this._normalizeKey(e.key);
+        if (!['control', 'shift', 'alt', 'meta'].includes(e.key.toLowerCase())) {
+            keys.push(mainKey);
+        }
+
+        return keys.join(' + ');
+    }
+
+    _normalizeKey(key) {
+        const map = {
+            'Control': 'CTRL',
+            'Shift': 'SHFT',
+            'Alt': 'ALT',
+            'Meta': 'META'
+        };
+
+        if (map[key]) {
+            return map[key];
+        }
+
+        return key.length === 1 ? key.toUpperCase() : key;
     }
 };
