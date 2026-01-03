@@ -82,15 +82,15 @@ const updateEvent = (store) => {
         }
     };
 
-    store.input.on('focus', focus);
-    store.input.on('blur', blur);
-    store.input.on('keydown', keydown);
-
-    store.listener.push(
-        { event: 'focus', func: focus },
-        { event: 'blur', func: blur },
-        { event: 'keydown', func: keydown }
-    );
+    //store.input.on('focus', focus);
+    //store.input.on('blur', blur);
+    //store.input.on('keydown', keydown);
+//
+    //store.listener.push(
+    //    { event: 'focus', func: focus },
+    //    { event: 'blur', func: blur },
+    //    { event: 'keydown', func: keydown }
+    //);
 };
 
 export default {

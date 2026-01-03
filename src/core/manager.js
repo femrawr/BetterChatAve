@@ -1,22 +1,26 @@
-import panel from '../gui/panel.js';
+import gui, { ModuleType, Sides, Tabs } from '../gui/main.js';
+
 import hooks from '../utils/hooks.js';
+import event from '../utils/event.js';
 import saving from './saving.js';
 
-import ClearDMs from './modules/convenience/ClearDMs.js';
-import FastBlock from './modules/convenience/FastBlock.js';
-import SwapDms from './modules/convenience/SwapDms.js';
+import Textbox from '../gui/box.js';
+import Button from '../gui/button.js';
+import Divider from '../gui/divider.js';
+import Dropdown from '../gui/list.js';
+import Slider from '../gui/slider.js';
+import Toggle from '../gui/toggle.js';
 
-import BlurBackground from './modules/interface/BlurBackground.js';
-import BackgroundOpacity from './modules/interface/BackgroundOpacity.js';
+import { FilterBypass, FilterBypassMode } from './modules/filter-bypass.js';
+import SpamFilter from './modules/spam-filter.js';
+import SwapDms from './modules/swap-messages.js';
+import FastBlock from './modules/fast-block.js';
+import CountrySearch from './modules/country-search.js';
+import ClearDMs from './modules/clear-messages.js';
+import BlurBackground from './modules/blur-background.js';
+import BackgroundOpacity from './modules/background-opacity.js';
 
-import CountrySearch from './modules/misc/CountrySearch.js';
-import DisableSuccess from './modules/misc/DisableSuccess.js';
-import FilterBypass from './modules/misc/FilterBypass.js';
-import SpamFilter from './modules/misc/SpamFilter.js';
-
-import NotifSettings from './modules/settings/Notifications.js';
-
-import chatSaving from './patches/ChatSaving.js';
+import NotifSettings from './settings/notifications.js';
 
 export default {
     sections: {},
@@ -24,191 +28,178 @@ export default {
     listener: [],
 
     add(module) {
-        this.modules[module.name] = module;
+        this.modules[module.text] = module;
         this.ui(module);
     },
 
     register() {
-        this.add(new ClearDMs());
+        this.add(new FilterBypass());
+        this.add(new FilterBypassMode());
+
+        new Divider()
+            .setTab(Tabs.Modules)
+            .setSide(Sides.Left)
+            .build();
+
+        this.add(new SpamFilter());
+
         this.add(new SwapDms());
+        this.add(new ClearDMs());
         this.add(new FastBlock());
+        this.add(new CountrySearch());
+
+        new Divider()
+            .setTab(Tabs.Modules)
+            .setSide(Sides.Right)
+            .build();
 
         this.add(new BlurBackground());
         this.add(new BackgroundOpacity());
 
-        this.add(new FilterBypass());
-        this.add(new DisableSuccess());
-        this.add(new SpamFilter());
-        this.add(new CountrySearch());
+        new Divider()
+            .setTab(Tabs.Modules)
+            .setSide(Sides.Right)
+            .build();
 
         this.add(new NotifSettings());
-
-        chatSaving.init();
     },
 
-    load() {
+    load(module) {
         const loaded = saving.get();
-        if (!loaded || !loaded.modules) return;
-
-        Object.entries(loaded.modules).forEach(([name, data]) => {
-            const module = this.modules[name];
-            if (!module) return;
-
-            if (data.state !== undefined) {
-                module.state = data.state;
-            }
-
-            if (data.config && module.config) {
-                Object.assign(module.config, data.config);
-            }
-        });
-    },
-
-    save(module) {
-        const data = { state: module.state };
-
-        if (module.config && Object.keys(module.config).length > 0) {
-            data.config = { ...module.config };
+        if (!loaded || !loaded.modules) {
+            return null;
         }
 
-        const saved = saving.get() || {};
-        const states = saved.modules || {};
+        for (const [name, data] of Object.entries(loaded.modules)) {
+            if (!this.modules[name] || name !== module) {
+                continue;
+            }
 
-        states[module.name] = data;
-        saving.update('modules', states);
+            return Object.values(data)[0];
+        }
+    },
+
+    save(module, config) {
+        const saved = saving.get() || {};
+        const data = saved.modules || {};
+
+        data[module] = config;
+        saving.update('modules', data);
     },
 
     ui(module) {
-        let sect = this.sections[module.sect];
-        if (!sect) {
-            sect = panel.addSection(module.sect);
-            this.sections[module.sect] = sect;
-        }
+        const loaded = this.load(module.text);
 
         switch (module.type) {
-            case 'Toggle':
-                module.ui = panel.addToggle(
-                    sect,
-                    module.name,
-                    module.tip,
-
-                    (state) => {
-                        module.toggle(state);
-                        this.save(module);
-                    }
-                );
+            case ModuleType.Textbox:
+                new Textbox()
+                    .setTab(module.tab)
+                    .setSide(module.side)
+                    .setText(module.text)
+                    .setGhost(module.config.placeholder)
+                    .setVal(loaded)
+                    .setInfo(module.info)
+                    .build();
 
                 break;
 
-            case 'Button':
-                module.ui = panel.addButton(
-                    sect,
-                    module.name,
-                    module.tip,
-
-                    () => {
-                        module.onActive();
-                    }
-                );
-
-                break;
-
-            case 'Slider':
-                const { min = 0, max = 100, value = 50 } = module.config;
-                module.ui = panel.addSlider(
-                    sect,
-                    module.name,
-                    module.tip,
-                    min,
-                    max,
-                    value,
-
-                    (val) => {
-                        module.config.value = val;
-                        module.onChange(val);
-                        this.save(module);
-                    }
-                );
+            case ModuleType.Button:
+                new Button()
+                    .setTab(module.tab)
+                    .setSide(module.side)
+                    .setText(module.text)
+                    .setBinded(true)
+                    .setBind(loaded)
+                    .setInfo(module.info)
+                    .build();
 
                 break;
 
-            case 'Box':
-                module.ui = panel.addBox(
-                    sect,
-                    module.name,
-                    module.tip,
-
-                    (val) => {
-                        module.onChange(val);
-                        this.save(module);
-                    }
-                );
+            case ModuleType.Dropdown:
+                new Dropdown()
+                    .setTab(module.tab)
+                    .setSide(module.side)
+                    .setText(module.text)
+                    .setItems(module.config.items)
+                    .setInfo(module.info)
+                    .build();
 
                 break;
 
-            case 'Label':
-                module.ui = panel.addLabel(section, module.name);
+            case ModuleType.Slider:
+                new Slider()
+                    .setTab(module.tab)
+                    .setSide(module.side)
+                    .setText(module.text)
+                    .setMin(module.config.min)
+                    .setMax(module.config.max)
+                    .setVal(loaded)
+                    .setInfo(module.info)
+                    .build();
+
+                break;
+
+            case ModuleType.Toggle:
+                new Toggle()
+                    .setTab(module.tab)
+                    .setSide(module.side)
+                    .setText(module.text)
+                    .setState(loaded)
+                    .setInfo(module.info)
+                    .build();
+
                 break;
         }
 
         module.onInit();
-
-        if (module.bind) {
-            this.bind(module);
-
-            if (module.type === 'Button') {
-                module.ui.name(`${module.name} (${module.bind.toUpperCase()})`);
-            }
-        }
-    },
-
-    bind(module) {
-        const keydown = (e) => {
-            if (e.key.toLowerCase() !== module.bind.toLowerCase() || !e.shiftKey) return;
-
-            window.$('#message_content').blur();
-            window.$('#content').blur();
-
-            if (module.type === 'Toggle') {
-                const state = !module.state;
-                module.toggle(state);
-                module.ui?.set?.(state);
-            } else if (module.type === 'Button') {
-                module.onActive();
-            }
-        };
-
-        document.addEventListener('keydown', keydown);
-        this.listener.push({ event: 'keydown', func: keydown });
     },
 
     init() {
         hooks.request(true);
+
         this.register();
-        this.load();
 
-        panel.addLabel(null, 'Hold down shift to activate binds.');
+        event.on('module.toggle', (data) => {
+            for (const module in this.modules) {
+                if (module !== data.name) {
+                    continue;
+                }
 
-        Object.values(this.modules).forEach(mod => {
-            if (!mod.state) return;
-            mod.onEnable();
-
-            switch (mod.type) {
-                case 'Toggle':
-                    mod.ui.set(true);
-                    break;
-
-                case 'Slider':
-                    mod.ui.set(mod.config.value);
-                    break;
+                this.save(module, { state: data.state });
+                this.modules[module].toggle(data.state);
             }
         });
+
+        event.on('module.change', (data) => {
+            for (const module in this.modules) {
+                if (module !== data.name) {
+                    continue;
+                }
+
+                this.save(module, { val: data.val });
+                this.modules[module].onChange(data.val);
+            }
+        });
+
+        event.on('module.call', (data) => {
+            for (const module in this.modules) {
+                if (module !== data.name) {
+                    continue;
+                }
+
+                this.save(module, { bind: data.bind });
+                this.modules[module].onEnable();
+            }
+        });
+
+        gui.sendNotif('Better Chat Avenue loaded!', 5);
+        gui.sendNotif('Click the "Insert" key to toggle the UI.', 7);
     },
 
     deinit() {
         chatSaving.deinit();
 
-        Object.values(this.modules).forEach(mod => {
+        Object.values(this.modules).forEach((mod) => {
             mod.disable();
         });
 

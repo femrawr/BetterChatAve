@@ -1,33 +1,26 @@
 import manager from './core/manager.js';
-import notifs from './gui/notifs.js';
-import panel from './gui/panel.js';
+import gui from './gui/main.js';
+import event from './utils/event.js';
 
-class Main {
-    constructor() {
-        window.bca = {};
-        window.bca.artifacts = [];
-        window.bca.events = [];
+if (
+    typeof window.bca !== 'undefined' &&
+    Object.keys(window.bca).length !== 0
+) {
+    throw new Error('better chat ave is already running');
+}
 
-        this.init();
-    }
+window.bca = {};
+window.bca.utils = {};
+window.bca.artifacts = [];
 
-    init() {
-        panel.init('Better Chate Avenue - femrawr')
-        notifs.init();
+gui.createMain('Better Chat Avenue - femrawr');
 
-        manager.init();
+manager.init();
 
-        panel.onClose = () => {
-            window.bca.artifacts.forEach(el => {
-                el.remove();
-            });
+event.on('exit', () => {
+    window.bca.artifacts.forEach((item) => {
+        item.remove();
+    });
 
-            manager.deinit();
-        };
-
-        notifs.good('Better Chat Avenue loaded!', 5);
-        notifs.info('Click the "Insert" key to toggle the UI', 7);
-    }
-};
-
-export default new Main();
+    manager.deinit();
+});

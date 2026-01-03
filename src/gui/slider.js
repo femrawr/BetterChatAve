@@ -113,13 +113,13 @@ export default class Slider extends Element {
         });
 
         value.addEventListener('input', (e) => {
-            const parsed = parseFloat(e.target.value) || 0;
+            const parsed = parseInt(e.target.value) || 0;
             const clamped = Math.max(this._min, Math.min(this._max, parsed));
 
             slider.value = clamped
             value.value = parsed;
 
-            event.emit('slider', {
+            event.emit('module.change', {
                 name: this.text,
                 val: parsed
             });
@@ -135,9 +135,9 @@ export default class Slider extends Element {
         slider.addEventListener('input', (e) => {
             value.value = e.target.value;
 
-            event.emit('slider', {
+            event.emit('module.change', {
                 name: this.text,
-                val: e.target.value
+                val: parseInt(e.target.value)
             });
         });
 

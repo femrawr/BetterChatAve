@@ -1,21 +1,19 @@
 export default class Module {
     constructor(options = {}) {
         const {
-            name = 'Name',
-            sect = null,
-            state = false,
+            text = '',
+            tab = '',
+            side = '',
             type = '',
-            bind = '',
-            tip = '',
+            info = '',
             config = {}
         } = options;
 
-        this.name = name;
-        this.sect = sect;
-        this.state = state;
+        this.text = text;
+        this.tab = tab;
+        this.side = side;
         this.type = type;
-        this.bind = bind;
-        this.tip = tip;
+        this.info = info;
         this.config = config;
         this.ui = null;
     }
@@ -23,36 +21,21 @@ export default class Module {
     onInit() {}
     onEnable() {}
     onDisable() {}
-    onActive() {}
-    onChange() {}
+    onChange(change) {}
 
     enable() {
-        this.state = true;
         this.onEnable();
     }
 
     disable() {
-        this.state = false;
         this.onDisable();
     }
 
     toggle(state) {
-        if (state === undefined) {
-            state = !this.state;
-        }
-
         if (state) {
             this.enable();
         } else {
             this.disable();
         }
-    }
-
-    setValue(val) {
-        this.ui?.set?.(val);
-    }
-
-    getValue() {
-        return this.ui?.get?.() ?? null;
     }
 };

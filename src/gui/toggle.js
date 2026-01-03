@@ -93,7 +93,7 @@ export default class Toggle extends Element {
 
             state = !state;
 
-            event.emit('toggle', {
+            event.emit('module.toggle', {
                 name: this.text,
                 state: state
             });

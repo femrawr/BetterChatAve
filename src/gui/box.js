@@ -87,7 +87,7 @@ export default class Textbox extends Element {
         });
 
         input.addEventListener('change', (e) => {
-            event.emit('textbox', {
+            event.emit('module.change', {
                 name: this.text,
                 val: e.target.value
             });

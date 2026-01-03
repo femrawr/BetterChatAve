@@ -1,13 +1,11 @@
-x x clear dms
 x  clear notifs
 x  decline all freind reqs
 x  accept all freind reqs
 x x fast block (whitelist friends)
 x  unblock last
-x x swap dms
-x  backgroup opacity
-x  blur background
-x x country search
+x x backgroup opacity
+x x blur background
+x x country search to use custom textbox
 x x disable success
 x x filter bypass (different modes)
 x x spam filter
@@ -16,9 +14,11 @@ x  custom chat message limit
 x  ban helper
 x  remove ban
 
-x x notifications
-
 x  chat saving
 x  make scroll bars better
 x  download picture
 x  view pictures
+
+x manager de-init
+
+x better documentation
