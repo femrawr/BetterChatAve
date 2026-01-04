@@ -125,12 +125,10 @@ export default {
             }
 
             if (this._main) {
-                console.log('main', this);
                 updateSave(body, main);
             }
 
             if (this._priv) {
-                console.log('priv', this);
                 updateSave(body, priv);
             }
         });
