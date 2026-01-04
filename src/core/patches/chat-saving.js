@@ -1,11 +1,13 @@
-import hooks from '../../utils/hooks.js';
+import requestHooks from '../../utils/request-hooks.js';
 import saving from '../saving.js';
+
+import similarCharacters from '../../../resources/similar-characters.json';
 
 const main = {
     saved: [],
     index: -1,
     focused: false,
-    input: window.$('#content'),
+    input: $('#content'),
     listener: []
 };
 
@@ -13,12 +15,21 @@ const priv = {
     saved: [],
     index: -1,
     focused: false,
-    input: window.$('#message_content'),
+    input: $('#message_content'),
     listener: []
 };
 
 const clean = (str) => {
-    return str.normalize('NFC').replace(/[\u200B-\u200D\uFEFF]/g, '');
+    const reverse = Object.fromEntries(
+        Object.entries(similarCharacters).map(([key, val]) => [val, key])
+    );
+
+    return str
+        .normalize('NFC')
+        .replaceAll('\u200D', '')
+        .split('')
+        .map((char) => reverse[char] ?? char)
+        .join('');
 }
 
 const updateSave = (body, store) => {
@@ -58,8 +69,13 @@ const updateEvent = (store) => {
     };
 
     const keydown = (e) => {
-        if (!store.focused) return;
-        if (store.saved.length === 0) return;
+        if (!store.focused) {
+            return;
+        }
+
+        if (store.saved.length === 0) {
+            return;
+        }
 
         if (e.key === 'ArrowUp') {
             e.preventDefault();
@@ -82,15 +98,15 @@ const updateEvent = (store) => {
         }
     };
 
-    //store.input.on('focus', focus);
-    //store.input.on('blur', blur);
-    //store.input.on('keydown', keydown);
-//
-    //store.listener.push(
-    //    { event: 'focus', func: focus },
-    //    { event: 'blur', func: blur },
-    //    { event: 'keydown', func: keydown }
-    //);
+    store.input.on('focus', focus);
+    store.input.on('blur', blur);
+    store.input.on('keydown', keydown);
+
+    store.listener.push(
+        { event: 'focus', func: focus },
+        { event: 'blur', func: blur },
+        { event: 'keydown', func: keydown }
+    );
 };
 
 export default {
@@ -101,7 +117,7 @@ export default {
             priv.saved = loaded.chat_save.priv;
         }
 
-        hooks.xhrFuncs.push(function(args) {
+        requestHooks.onXHR.push(function(args) {
             const body = args[0];
 
             if (typeof body !== 'string') {

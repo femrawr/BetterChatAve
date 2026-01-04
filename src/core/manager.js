@@ -11,6 +11,8 @@ import Dropdown from '../gui/list.js';
 import Slider from '../gui/slider.js';
 import Toggle from '../gui/toggle.js';
 
+import chatSaving from './patches/chat-saving.js';
+
 import { FilterBypass, FilterBypassMode } from './modules/filter-bypass.js';
 import { FastBlock, WhitelistFriends} from './modules/fast-block.js';
 import SpamFilter from './modules/spam-filter.js';
@@ -25,7 +27,6 @@ import NotifSettings from './settings/notifications.js';
 export default {
     sections: {},
     modules: {},
-    listener: [],
 
     add(module) {
         this.modules[module.text] = module;
@@ -98,7 +99,7 @@ export default {
                     .setSide(module.side)
                     .setText(module.text)
                     .setGhost(module.config.placeholder)
-                    .setVal(loaded)
+                    .setVal(loaded || module.config.val)
                     .setInfo(module.info)
                     .build();
 
@@ -111,7 +112,7 @@ export default {
                     .setSide(module.side)
                     .setText(module.text)
                     .setBinded(true)
-                    .setBind(loaded)
+                    .setBind(loaded || module.config.bind)
                     .setInfo(module.info)
                     .build();
 
@@ -123,7 +124,7 @@ export default {
                     .setSide(module.side)
                     .setText(module.text)
                     .setItems(module.config.items)
-                    .setItem(loaded)
+                    .setItem(loaded || module.config.item)
                     .setInfo(module.info)
                     .build();
 
@@ -137,7 +138,7 @@ export default {
                     .setText(module.text)
                     .setMin(module.config.min)
                     .setMax(module.config.max)
-                    .setVal(loaded)
+                    .setVal(loaded || module.config.val)
                     .setInfo(module.info)
                     .build();
 
@@ -149,7 +150,7 @@ export default {
                     .setTab(module.tab)
                     .setSide(module.side)
                     .setText(module.text)
-                    .setState(loaded)
+                    .setState(loaded || module.config.state)
                     .setInfo(module.info)
                     .build();
 
@@ -162,6 +163,7 @@ export default {
 
     init() {
         requestHooks.hookXHR();
+        chatSaving.init();
 
         this.register();
 
@@ -194,7 +196,10 @@ export default {
                 }
 
                 this.save(module, { bind: data.bind });
-                this.modules[module].onEnable();
+
+                if (data.call) {
+                    this.modules[module].onEnable();
+                }
             }
         });
 
@@ -203,18 +208,11 @@ export default {
     },
 
     deinit() {
-        chatSaving.deinit();
-
         Object.values(this.modules).forEach((mod) => {
             mod.disable();
         });
 
-        document.removeEventListener(
-            this.listener[0].event,
-            this.listener[0].func
-        );
-
-        this.listener = [];
+        chatSaving.deinit();
         requestHooks.unhookXHR();
     }
 };

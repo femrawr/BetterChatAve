@@ -94,7 +94,8 @@ export default class Button extends Element {
         button.addEventListener('click', () => {
             event.emit('module.call', {
                 name: this.text,
-                bind: this.bind
+                bind: this.bind,
+                call: true
             });
         });
 
@@ -171,7 +172,8 @@ export default class Button extends Element {
 
                     event.emit('module.call', {
                         name: this.text,
-                        bind: this.bind
+                        bind: this.bind,
+                        call: false
                     });
                 }
             });
@@ -215,9 +217,9 @@ export default class Button extends Element {
             keys.push('META');
         }
 
-        const mainKey = this._normalizeKey(e.key);
+        const key = this._normalizeKey(e.key);
         if (!['control', 'shift', 'alt', 'meta'].includes(e.key.toLowerCase())) {
-            keys.push(mainKey);
+            keys.push(key);
         }
 
         return keys.join(' + ');

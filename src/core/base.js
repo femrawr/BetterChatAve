@@ -15,7 +15,7 @@ export default class Module {
         this.type = type;
         this.info = info;
         this.config = config;
-        this.ui = null;
+        this.state = false;
     }
 
     onInit() {}
@@ -24,10 +24,12 @@ export default class Module {
     onChange(change) {}
 
     enable() {
+        this.state = true;
         this.onEnable();
     }
 
     disable() {
+        this.state = false;
         this.onDisable();
     }
 

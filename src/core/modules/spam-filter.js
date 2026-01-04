@@ -15,6 +15,8 @@ export default class SpamFilter extends Module {
 
         this._watcher = null;
         this._list = [];
+
+        this._debug = false;
     }
 
     onInit() {
@@ -51,11 +53,13 @@ export default class SpamFilter extends Module {
 
                         msg.remove();
 
-                        const time = msg.querySelector('.cdate').innerText.trim();
-                        const name = msg.querySelector('.username').innerText.trim();
-                        const id = msg.querySelector('.avtrig.avs_menu.chat_avatar').getAttribute('data-id');
+                        if (this._debug) {
+                            const time = msg.querySelector('.cdate').innerText.trim();
+                            const name = msg.querySelector('.username').innerText.trim();
+                            const id = msg.querySelector('.avtrig.avs_menu.chat_avatar').getAttribute('data-id');
 
-                        console.log(`[${time}] removed: ${name} (${id}) - ${text} for "${match}"`);
+                            console.log(`[${time}] removed: ${name} (${id}) - ${text} for "${match}"`);
+                        }
                     });
                 });
             });

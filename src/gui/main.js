@@ -179,6 +179,15 @@ export default {
             tabs.appendChild(tab);
         });
 
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Insert') {
+                return;
+            }
+
+            const display = this.main.style.display;
+            this.main.style.display = display === 'none' ? 'flex' : 'none';
+        });
+
         controls.appendChild(hide);
         controls.appendChild(exit);
         bar.appendChild(title);
@@ -195,6 +204,9 @@ export default {
 
         document.body.appendChild(this.main);
         document.body.appendChild(this.notifs);
+
+        window.bca.artifacts.push(this.main);
+        window.bca.artifacts.push(this.notifs);
     },
 
     sendNotif(text, time = 0) {

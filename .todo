@@ -3,21 +3,18 @@ x  decline all freind reqs
 x  accept all freind reqs
 x x fast block (whitelist friends)
 x  unblock last
-x x blur background
-x x disable success
-x x filter bypass (different modes)
 x  mod notify
 x  custom chat message limit
 x  ban helper
 x  remove ban
+x  focus/unfocus textbox
 
-x  chat saving
 x  make scroll bars better
 x  download picture
 x  view pictures
 
-x manager de-init
-
 x better documentation
 
-ui toggling
+remove events on exit
+
+find a way to seperate the different shift/ctrl keys
